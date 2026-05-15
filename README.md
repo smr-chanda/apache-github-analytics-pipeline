@@ -2,7 +2,6 @@
 
 This project implements an end-to-end ELT pipeline for Apache GitHub activity using Python for extraction and Databricks/PySpark for Bronze-Silver-Gold processing.
 
-Public repository: `https://github.com/smr-chanda/apache-github-analytics-pipeline`
 
 ## What This Project Does
 
