@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "github-analytics-pipeline"
+version = "0.1.0"
+description = "Apache GitHub analytics extraction and Databricks notebook assets."
+requires-python = ">=3.11"
+dependencies = [
+  "python-dotenv>=1.0,<2.0",
+  "requests>=2.32,<3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4,<9.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

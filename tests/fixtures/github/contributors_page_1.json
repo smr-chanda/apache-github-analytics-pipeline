@@ -1,0 +1,13 @@
+[
+  {
+    "login": "alice",
+    "id": 101,
+    "contributions": 12,
+    "type": "User"
+  },
+  {
+    "name": "Build Bot",
+    "contributions": 3,
+    "type": "Anonymous"
+  }
+]

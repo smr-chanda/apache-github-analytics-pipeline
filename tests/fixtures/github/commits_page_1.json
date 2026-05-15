@@ -1,0 +1,29 @@
+[
+  {
+    "sha": "abc123",
+    "commit": {
+      "author": {
+        "name": "Alice",
+        "email": "alice@example.com",
+        "date": "2026-05-14T12:00:00Z"
+      },
+      "message": "Improve scheduler"
+    },
+    "author": {
+      "login": "alice",
+      "id": 101
+    }
+  },
+  {
+    "sha": "def456",
+    "commit": {
+      "author": {
+        "name": "Bob",
+        "email": "bob@example.com",
+        "date": "2026-05-13T09:30:00Z"
+      },
+      "message": "Fix docs"
+    },
+    "author": null
+  }
+]
