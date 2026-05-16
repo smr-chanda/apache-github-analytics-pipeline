@@ -27,11 +27,7 @@ This project implements an end-to-end ELT pipeline for Apache GitHub activity us
 
 - `src/github_analytics/`: extraction pipeline and shared configuration
 - `tests/`: unit tests for config, file layout, GitHub client behavior, and summaries
-- `notebooks/submission_notebook.py`: simplified Databricks notebook for final submission
-- `notebooks/01_github_analytics_pipeline.py`: fuller notebook version
-- `docs/report-content.md`: final report draft content
-- `docs/screenshots-checklist.md`: screenshot checklist for submission
-- `docs/plans/`: implementation plan
+- `notebooks/submission_notebook.ipynb`: canonical Databricks submission notebook
 
 ## Prerequisites
 
@@ -91,7 +87,7 @@ python -m pytest
 
 1. Upload the contents of `raw/github` into a Databricks Volume.
 2. Keep the folder structure unchanged so the volume contains `org=apache/...` under the chosen base path.
-3. In Databricks, import or open `notebooks/submission_notebook.py`.
+3. In Databricks, import or open `notebooks/submission_notebook.ipynb`.
 4. Set:
    ```python
    RAW_BASE_PATH = "/Volumes/<catalog>/<schema>/<volume>/github"
@@ -104,10 +100,9 @@ python -m pytest
 
 1. Run local extraction.
 2. Upload raw JSON to a Databricks Volume.
-3. Run `notebooks/submission_notebook.py` in Databricks.
-4. Capture screenshots listed in `docs/screenshots-checklist.md`.
-5. Use `docs/report-content.md` as the written report base.
-6. Submit:
+3. Run `notebooks/submission_notebook.ipynb` in Databricks.
+4. Capture the final output screenshots from the notebook.
+5. Submit:
    - the Databricks notebook
    - the written report
    - the output screenshots
