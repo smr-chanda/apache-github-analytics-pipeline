@@ -7,3 +7,4 @@ __pycache__/
 raw/
 docx_render_out/
 *.pdf
+!docs/*.pdf

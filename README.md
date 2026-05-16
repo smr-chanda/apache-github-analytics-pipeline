@@ -1,81 +1,101 @@
 # Apache GitHub Analytics Pipeline
 
-This project implements an end-to-end ELT pipeline for Apache GitHub activity using Python for extraction and Databricks/PySpark for Bronze-Silver-Gold processing.
-
-
-## What This Project Does
-
-- Extracts raw GitHub REST API data for the Apache organization.
-- Preserves raw JSON in a Bronze-style landing layout.
-- Cleans and joins repository, commit, and contributor data into Silver-style tables.
-- Produces Gold-style analytics for:
-  - repository activity
-  - weekly and monthly commit trends
-  - language distribution
-  - contributor counts
-  - stars versus recent activity
-  - contributor behavior over time
+End-to-end ELT pipeline for Apache GitHub activity using the **GitHub REST API**, local Python extraction, and Databricks/PySpark Bronze-Silver-Gold processing.
 
 ## Scope
 
 - Organization: `apache`
-- Repository metadata scope: top `200` active public repositories
+- Repository metadata: top `200` active public repositories
 - Deep-dive repositories: `spark`, `kafka`, `flink`, `airflow`, `iceberg`
 - Commit window: latest `30` days
 
-## Repository Layout
+## Repo Map
 
-- `src/github_analytics/`: extraction pipeline and shared configuration
-- `tests/`: unit tests for config, file layout, GitHub client behavior, and summaries
-- `notebooks/submission_notebook.ipynb`: canonical Databricks submission notebook
+```text
+.
+|-- .env.example
+|-- .gitignore
+|-- README.md
+|-- docs/
+|   `-- Sai_Mani_Raj_Chanda_Big_Data_Project_Report.pdf
+|-- notebooks/
+|   `-- submission_notebook.ipynb
+|-- pyproject.toml
+|-- requirements.txt
+|-- src/
+|   `-- github_analytics/
+|       |-- config.py
+|       |-- extract_commits.py
+|       |-- extract_contributors.py
+|       |-- extract_repos.py
+|       |-- file_layout.py
+|       |-- github_client.py
+|       |-- run_extraction.py
+|       `-- summary.py
+`-- tests/
+    |-- fixtures/github/
+    |-- test_config.py
+    |-- test_file_layout.py
+    |-- test_github_client.py
+    `-- test_summary.py
+```
 
 ## Prerequisites
 
 - Python `3.11+`
-- A GitHub personal access token stored as `GITHUB_TOKEN`
 - Databricks Free Edition or another Databricks workspace
+- A **GitHub personal access token (PAT)** for authenticated GitHub API access
+
+## Configuration
+
+Required:
+
+- `GITHUB_TOKEN`: your GitHub personal access token
+
+Optional:
+
+- `GITHUB_ORG`: defaults to `apache`
+- `REPO_METADATA_LIMIT`: defaults to `200`
+- `DEEP_DIVE_REPOS`: defaults to `spark,kafka,flink,airflow,iceberg`
+- `COMMIT_WINDOW_DAYS`: defaults to `30`
+
+Example:
+
+```env
+GITHUB_TOKEN=your_github_personal_access_token
+GITHUB_ORG=apache
+REPO_METADATA_LIMIT=200
+DEEP_DIVE_REPOS=spark,kafka,flink,airflow,iceberg
+COMMIT_WINDOW_DAYS=30
+```
 
 ## Local Setup
 
 1. Create and activate a virtual environment.
-2. Install the package and dev dependencies:
+2. Install dependencies:
    ```powershell
    python -m pip install -e .[dev]
    ```
-3. Set your GitHub token:
+3. Set your GitHub personal access token:
    ```powershell
    setx GITHUB_TOKEN "your-token-here"
    ```
-   Then open a new PowerShell window.
-4. Confirm the token is visible:
+4. Open a new PowerShell window and verify:
    ```powershell
    echo $env:GITHUB_TOKEN
    ```
 
-## Configuration
-
-The project supports these environment variables:
-
-- `GITHUB_TOKEN`: required
-- `GITHUB_ORG`: defaults to `apache`
-- `REPO_METADATA_LIMIT`: defaults to `200`
-- `DEEP_DIVE_REPOS`: comma-separated repo names
-- `COMMIT_WINDOW_DAYS`: defaults to `30`
-
-Defaults are defined in `src/github_analytics/config.py`.
-
 ## Run Local Extraction
-
-Run the end-to-end extractor:
 
 ```powershell
 python -m github_analytics.run_extraction
 ```
 
-Expected result:
+This writes raw GitHub API JSON under `raw/github/...` for:
 
-- raw files are written under `raw/github/...`
-- a summary is printed for repositories, commits, and contributors
+- repository metadata
+- commit history for the five deep-dive repositories
+- contributor snapshots for the same five repositories
 
 ## Run Tests
 
@@ -83,42 +103,52 @@ Expected result:
 python -m pytest
 ```
 
-## Load Data into Databricks
+## Run In Databricks
 
 1. Upload the contents of `raw/github` into a Databricks Volume.
-2. Keep the folder structure unchanged so the volume contains `org=apache/...` under the chosen base path.
-3. In Databricks, import or open `notebooks/submission_notebook.ipynb`.
+2. Keep the folder structure unchanged.
+3. Import `notebooks/submission_notebook.ipynb` into Databricks.
 4. Set:
    ```python
    RAW_BASE_PATH = "/Volumes/<catalog>/<schema>/<volume>/github"
    ```
-   The path must stop at the folder directly above `org=apache`.
-5. If using Unity Catalog, use `_metadata.file_path` instead of `input_file_name()` when reading source file paths.
-6. Run the notebook top to bottom.
+5. Make sure `RAW_BASE_PATH` stops at the folder directly above `org=apache`.
+6. If you are using Unity Catalog, use `_metadata.file_path` instead of `input_file_name()` when reading source paths.
+7. Run the notebook from top to bottom.
 
-## How To Recreate The Final Submission
+## Recreate The Submission
 
 1. Run local extraction.
-2. Upload raw JSON to a Databricks Volume.
-3. Run `notebooks/submission_notebook.ipynb` in Databricks.
-4. Capture the final output screenshots from the notebook.
-5. Submit:
-   - the Databricks notebook
-   - the written report
-   - the output screenshots
+2. Upload the raw JSON to Databricks.
+3. Run `notebooks/submission_notebook.ipynb`.
+4. Capture notebook outputs for screenshots.
+5. Submit the notebook, report, and screenshots.
+
+## Included Submission Artifact
+
+- Final report PDF: `docs/Sai_Mani_Raj_Chanda_Big_Data_Project_Report.pdf`
 
 ## Verification
 
-Minimum local verification:
+Local:
 
 ```powershell
 python -m pytest
 python -m github_analytics.run_extraction
 ```
 
-Databricks verification:
+Databricks:
 
-- Bronze row counts load successfully
+- Bronze loads successfully
 - Silver tables build successfully
-- Gold analytics render successfully
-- validation output reports zero duplicate commits and zero null commit timestamps
+- Gold outputs render successfully
+- validation shows zero duplicate commits and zero null commit timestamps
+
+## Data Source Note
+
+This project uses the **GitHub REST API**. API usage is subject to GitHub's API terms:
+
+- [GitHub REST API docs](https://docs.github.com/en/rest?ref=public-apis)
+- [GitHub API authentication](https://docs.github.com/v3/auth)
+- [GitHub personal access tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens?source=post_page-----64ee8bb11630---------------------------------------)
+- [GitHub Terms of Service](https://docs.github.com/terms-of-service)
